@@ -16,7 +16,7 @@ h4 {
   margin-bottom: 1.5rem;
   color: white;
   text-align: center;
-  background-color: #b1076d;
+  background-color: #bb6a13;
 }
 
 .nd-pageheader a, .nd-pageheader a.likelink {
@@ -28,7 +28,7 @@ h4 {
   margin-top: 1.5rem;
   padding: 1rem;
   text-align: center;
-  background-color: #b1076d;
+  background-color: #bb6a13;
 }
 
 .nd-pagefooter a {
@@ -244,6 +244,20 @@ nobr.widenobr {
   margin-left: auto;
   margin-right: auto;
   width: 80%;
+}
+.formula {
+  font-family: 'Computer Modern', 'Latin Modern Math', serif;
+  font-size: 1.1em;
+  margin: 0.5em 0;
+  padding: 0.5em;
+  background: #f8f8f8;
+  border-left: 3px solid #333;
+}
+
+.formula-description {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 0.25em;
 }
 /* Trick for moving the media-control-panel down on chrome */
 /*

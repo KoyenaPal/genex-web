@@ -2,21 +2,20 @@
 <html lang="en">
 
 <head>
-    <title>Future Lens: Anticipating Subsequent Tokens from a Single Hidden State</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description"
-        content="" />
-    <meta property="og:title" content="Future Lens" />
-    <meta property="og:url" content="https://future.baulab.info/" />
-    <meta property="og:image" content="https://future.baulab.info/images/fv-thumb.png" />
-    <meta property="og:description" content="
-    We conjecture that hidden state vectors corresponding to individual input tokens encode information sufficient to accurately predict several tokens ahead.">
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Future Lens: Anticipating Subsequent Tokens from a Single Hidden State" />
-    <meta name="twitter:description"
-        content="Do hidden states in large language models (LLMs) encode tokens farther than a single token ahead? If so, how can we decode this sequence of tokens from a single state?" />
-    <meta name="twitter:image" content="https://future.baulab.info/images/fv-thumb.png" />
+    <meta charset="UTF-8">
+    <title>Do Explanations Generalize across Large Reasoning Models?</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Exploring whether reasoning chains can serve as stable, interpretable guides that lead different AI systems to consistent answers.">
+    <meta property="og:title" content="Do Explanations Generalize across Large Reasoning Models?">
+    <meta property="og:url" content="https://genex.baulab.info/">
+    <meta property="og:image" content="https://genex.baulab.info/images/fv-thumb.png">
+    <meta property="og:description" content="Do explanations generalize across large reasoning models?">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Do Explanations Generalize across Large Reasoning Models?">
+    <meta name="twitter:description" content="Do explanations generalize across large reasoning models?">
+    <meta name="twitter:image" content="https://genex.baulab.info/images/fv-thumb.png">
+    
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -57,245 +56,255 @@
         :target {
             background-color: yellow;
         }
+
+        figure {
+            margin: 2em 0;
+        }
+
+        figure img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        figcaption {
+            margin-top: 1em;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .citation {
+            margin: 1.5em 0;
+            padding: 1em;
+            background: #f8f8f8;
+            border-left: 3px solid #333;
+        }
+
+        .citation img {
+            max-width: 200px;
+            max-height: 150px;
+            float: left;
+            margin-right: 1em;
+            margin-bottom: 0.5em;
+        }
+
+        .citation::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
     </style>
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FD12LWN557"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date()); gtag('config', 'G-FD12LWN557');
+        gtag('js', new Date()); 
+        gtag('config', 'G-FD12LWN557');
     </script>
-
 </head>
-
 
 <body class="nd-docs">
     <div class="nd-pageheader">
         <div class="container">
             <h1 class="lead">
-                <nobr class="widenobr">Anticipating Subsequent Tokens from a Single Hidden State</nobr>
+                <span class="widenobr">Do Explanations Generalize across Large Reasoning Models?</span>
             </h1>
             <address>
-                <nobr><a href="https://koyenapal.github.io/" target="_blank">Koyena Pal</a><sup>1</sup>,</nobr>
-                <nobr><a href="https://jiudingsun01.github.io/" target="_blank">Jiuding Sun<sup>1</sup></a>,</nobr>
-                <nobr><a href="https://www.linkedin.com/in/andrewwyuan/" target="_blank">Andrew Yuan<sup>2</sup></a>,</nobr>
-                <nobr><a href="https://www.byronwallace.com/" target="_blank">Byron C. Wallace<sup>1</sup></a>,</nobr>
-                <nobr><a href="https://baulab.info/" target="_blank">David Bau<sup>1</sup></a></nobr><br>
-                <nobr><sup>1</sup><a href="https://khoury.northeastern.edu/" target="_blank">Northeastern
-                    University</a>,</nobr>
-                    <nobr><sup>2</sup><a href="https://www.umass.edu/" target="_blank">UMass Amherst</a></nobr>
+                <span><a href="https://koyenapal.github.io/" target="_blank">Koyena Pal*</a><sup>1</sup>,</span>
+                <span><a href="https://baulab.info/" target="_blank">David Bau</a><sup>1</sup>,</span>
+                <span><a href="https://csinva.io/" target="_blank">Chandan Singh</a><sup>2</sup></span><br>
+                <span><sup>1</sup><a href="https://khoury.northeastern.edu/" target="_blank">Northeastern University</a>,</span>
+                <span><sup>2</sup><a href="https://www.microsoft.com/en-us/research/" target="_blank">Microsoft Research</a></span><br>
+                <span><sup>*</sup>Work done as part of <a href="https://www.cbai.ai/" target="_blank">CBAI Fellowship</a></span>
             </address>
         </div>
-    </div><!-- end nd-pageheader -->
+    </div>
 
     <div class="container">
-        <div class="row justify-content-center" style="margin-bottom: 20px">
-        </div>
         <div class="row justify-content-center text-center">
-
-            <p>
-                <a href="https://arxiv.org/abs/2311.04897" class="d-inline-block p-3 align-top" target="_blank">
-                    <img height="100" width="78" src="images/paper-thumb.png" style="border:1px solid; margin: 0 38px;"
-                        alt="ArXiv Preprint thumbnail" data-nothumb="">
-                    <br>Preprint<br>ArXiv</a>
-                <a href="https://github.com/KoyenaPal/future-lens/" class="d-inline-block p-3 align-top" target="_blank">
-                    <img height="100" width="78" src="images/code-thumb.png" style="border:1px solid; margin: 0 38px;"
-                        alt="Github code thumbnail" data-nothumb="">
-                    <br>Source Code<br>Github<br>
-                </a>
-                <a href="https://baulab.us/u/koyena/data/future-lens/" class="d-inline-block p-3 align-top" target="_blank">
-                    <img height="100" width="78" src="images/data-thumb.png" style="border:1px solid; margin: 0 38px;"
-                        alt="Data thumbnail" data-nothumb="">
-                    <br>Dataset<br> and Soft Prompt<br>
-                </a>
-                <a href="docs/future-lens-poster.pdf" class="d-inline-block p-3 align-top" target="_blank">
-                    <img height="100" width="78" src="images/poster-thumb.png" style="border:1px solid; margin: 0 38px;"
-                        alt="Poster thumbnail" data-nothumb="">
-                    <br>Poster<br>CoNLL 2023<br>
-                </a>
-                <a href="https://www.youtube.com/watch?v=O4Opvjze8Ic" class="d-inline-block p-3 align-bottom" target="_blank">
-                    <img height="78" width="136" src="images/youtube-thumb.png" style="border:1px solid; margin: 0 38px;"
-                        alt="Youtube thumbnail" data-nothumb="">
-                    <br>Youtube<br>(Cognitive Revolution)<br>
-                </a>
-            </p>
-
-            <div class="card" style="max-width: 1020px;">
-                <div class="card-block">
-                <h3>Do hidden states encode distant tokens?</h3>
+            <div class="col-12">
                 <p>
-                    Auto-regressive transformer language models are typically trained to predict one token ahead, but
-                    recent work has hinted that individual hidden states may contain more information than just probabilities of the following token. 
-                    In this work we ask: <br><b>To what extent can we extract information about future
-                    tokens from a single hidden token representation?</b>
+                    <a href="https://arxiv.org/abs/2311.04897" class="d-inline-block p-3 align-top" target="_blank">
+                        <img height="100" width="78" src="images/paper-thumb.png" style="border:1px solid; margin: 0 38px;" alt="ArXiv Preprint thumbnail">
+                        <br>Preprint<br>ArXiv
+                    </a>
+                    <a href="https://github.com/KoyenaPal/genex/" class="d-inline-block p-3 align-top" target="_blank">
+                        <img height="100" width="78" src="images/code-thumb.png" style="border:1px solid; margin: 0 38px;" alt="Github code thumbnail">
+                        <br>Source Code<br>Github
+                    </a>
                 </p>
-                </div><!--card-block-->
-                </div><!--card-->
 
-        </div><!--row-->
+                <div class="card" style="max-width: 1020px; margin: 0 auto;">
+                    <div class="card-block">
+                        <h3>Generalization of Chain of Thoughts (CoTs)</h3>
+                        <p>
+                            While models and humans naturally explain concepts differently, we explore something more fundamental: <strong>can reasoning chains serve as stable, interpretable guides that lead different AI systems to consistent answers?</strong>
+                            A good explanation isn't just correct—it should be learnable. If we give an explanation to another agent, they should understand it and draw the intended conclusions. We quantify this through cross-model CoT generalization.
+                        </p>
+                        <p>
+                            We find that explanations <em>can</em> generalize across models, though effectiveness varies significantly by which models are involved. Ensembled explanations often improve consistency, and more consistent explanations correlate with higher human preference.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col">
-                  <h2>The Future Lens</h2>
+                <h2>Approach</h2>
 
-                  <p
-                  >Each cell in the visualization here represents a single hidden state of
-                  the transformer at a single token and a single layer.  Although the
-                  transformer is trained to only predict a single token ahead, we perform
-                  a multi-token decoding based only on the information within that
-                  single hidden state, revealing, for example, that after the text
-                  "Marty McFly from", the model has not only has predicted the next
-                  word <em>Back</em>, but that it also contains an encoding
-                  of the entire phrase <em>Back to the Future</em> at certain layers within
-                  the model. Our experiments reveal that distant-future information is
-                  very common: many hidden states do contain information about predicted
-                  context several tokens in the future.
-              <div class="text-center">
-                    <figure class="center_image">
-                    <img src="images/Paper/future_lens_example.png" class="bigfig">
+                <p>We test four methods for eliciting and using reasoning explanations across models:</p>
+
+                <div style="margin: 1.5em 0;">
+                    <p><strong>(A) Empty CoT:</strong> No reasoning provided (baseline)</p>
+                    <p><strong>(B1) Default CoT:</strong> Model uses its own reasoning with deterministic decoding</p>
+                    <p><strong>(B2) Sampled CoT:</strong> Model uses its own reasoning with nucleus sampling</p>
+                    <p><strong>(C) Transfer CoT:</strong> One model's reasoning is transferred to another model</p>
+                    <p><strong>(D) Ensemble CoT:</strong> Multiple models generate candidate sentences, and an evaluator selects the least surprising option at each step. The selected sentence is added to context and the process repeats until thinking end tag is generated.</p>
+                </div>
+
+                <p>For a generator model l<sub>gen</sub> and problem x, we elicit a reasoning explanation z = l<sub>gen</sub>(x) within thinking tags before the model produces an answer. We then test whether this explanation generalizes by giving it to a different evaluator model l<sub>eval</sub> and measuring if it reaches the same conclusion. To isolate the effect of reasoning rather than answer copying, we remove explicit answer declarations from explanations using an LLM filter.</p>
+
+                <figure class="text-center">
+                    <img src="images/Paper/overview.png" alt="Overview of CoT generalization methods" class="bigfig">
                     <figcaption>
-                        We used one of our decoding methods to create a tool called Future Lens.
-                        We applied this tool to the hidden states of GPT-J-6B processing <i>Marty McFly from</i>. 
-                        Each cell illustrates the most likely sequence of future tokens that the respective hidden state predicts. 
-                        The darker boxes correspond to higher probabilities/confidence. Notice that, by the time the transformer reads,
-                        <i>from</i>, it already knows that it wants to say <i>Back to the Future</i>.
+                        <strong>Methods for eliciting reasoning chains and exploring generalization of Chain-of-Thought (CoT).</strong> 
+                        The figure illustrates four approaches to modifying or replacing model-generated CoTs. Panel (E) (bottom-right) shows 
+                        how CoT generalization is evaluated for the MedCalc-Bench dataset across a set of models (A–E), where each model's reasoning 
+                        can be substituted with one of the following variations: <strong>(A) Empty CoT:</strong> No reasoning text is provided between the 
+                        model's thinking tags. <strong>(B) Default CoT:</strong> The model's own reasoning is used. (2.1) uses deterministic decoding, while (2.2) 
+                        uses nucleus sampling (do_sampling=True). <strong>(C) Transfer CoT:</strong> Reasoning from one model is directly transferred to another, 
+                        replacing its own. <strong>(D) Ensembled CoT:</strong> A generator–evaluator loop. Generator models produce <em>n</em> = 3 candidate sentences 
+                        (≤ 15 tokens each), forming <em>k</em> candidates. These are scored by the evaluator, and the least surprising candidate (lowest perplexity) 
+                        is appended to the growing ensembled thought. This updated context is fed back into the generators, and the process repeats until an 
+                        end-of-thought or maximum token limit is reached.
                     </figcaption>
                 </figure>
-                </div>
+
+                <h3 style="margin-top: 2em;">Evaluation Setup</h3>
                 
-                <h2>How did we decode future tokens?</h2>   
-                <p>
-                Each of our methods has the same goal: Extract accurate predictions of a model's probability 
-                distribution several tokens ahead, based on the information in only one hidden state at a single layer
-                at one token of the transformer.</p>
-
-                <h4>1. Linear Model Approximation</h4> 
-                <p>Extending the ideas of <i>Tuned Lens</i> and the <i>Logit Lens</i>, we train linear models to approximate future 
-                model predictions several tokens in the future, in order to reveal the extent to which
-                individual hidden states may directly encode subsequent tokens.</p>
-                <br>
-                <p class="text-center">
-                    <img id="linear" src="images/Paper/linear.png" class="smallfig"
-                        style="max-width: 320px">
-                    <figcaption>
-                        LLM to Linear Model Approximation
-                        Overview. Given a hidden state, 
-                        
-                        <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T</sub></i>, the linear model,
-                        <i>f<sub>&theta;</sub></i>, is trained to output a future hidden state 
-                        <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T+1</sub></i>. In
-                        this example, <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T</sub></i>
-                        is the encoding that would lead to the
-                        prediction of 'New,' and <i>f<sub>&theta;</sub></i> uses only that information
-                        to predict <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T+1</sub></i>
-                        that would predict 'York.'
-                        </figcaption>
-                </p>
+                <p>We evaluate these methods across <strong>5 large reasoning models</strong> — NRR (1.5B), OpenT (7B), OSS (20B), QwQ (32B), and DAPO (32B) — on two benchmarks:</p>
                 
-                <h4>2. Fixed Prompt Causal Intervention</h4> 
-                <p>The next method we consider involves a single state causal intervention where we transplant the
-                    hidden state <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T</sub></i>
-                    into the transformer while it is decoding an unrelated bit of context. The question is
-                    whether this transplantation steers the model to generate tokens related to the prefix that induced 
-                    <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T</sub></i>.
-                    If it does, this indicates that information about subsequent tokens (in the original sequence) is prominently encoded in 
-                    <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T</sub></i>. </p>
-                <br>
-                <p class="text-center">
-                    <img id="linear" src="images/Paper/fixed_prompt.png" class="medfig">
+                <ul style="margin-left: 1.5em;">
+                    <li><strong>MedCalc-Bench:</strong> 100 medical calculation tasks requiring domain-specific reasoning</li>
+                    <li><strong>Instruction Induction:</strong> 100 samples across 20 general reasoning tasks (extended with 12 new tasks)</li>
+                </ul>
+
+                <p style="margin-top: 1.5em;">We measure generalization of CoT through <strong>consistency</strong> (do models reach the same conclusion?) and track its effect on <strong>accuracy</strong> (is that conclusion correct?).</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <h2>Matching Model Responses</h2>
+
+                <figure class="text-center">
+                    <img src="images/Paper/consistency.png" alt="Consistency analysis across methods" class="bigfig">
                     <figcaption>
-                        Illustration of Fixed prompt Causal Intervention. 
-                        The left and right sides represent two different transformer model runs. 
-                        On the left hand side, we have the original run of <i>Madison Square Garden ... in New York</i>. 
-                        We transplant the hidden state, <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T</sub></i>
-                         to the other transformer model run, which has a fixed generic context, <i>Tell me something about</i>, 
-                         as its input. With <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T</sub></i> replacing the hidden state at 
-                         <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>M</sub></i>, 
-                         we measure the tendency of this modified transformer run to reveal the 
-                         probability distribution in <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>L</sub></i>. 
-                         In such cases, it would reveal that <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>L</sub></i> was predicting, for instance, `New York City.'
-                        </figcaption>
-                </p>
+                        Average pairwise consistency across thought settings in MedCalc-Bench (above) and
+                        Instruction Induction (below). For thought variations indicating Ensemble CoT, models listed before
+                        the slash (/) serve as generators, while the model after the slash acts as the judge/evaluator. Results
+                        are reported both for the full text and for text with the final answer removed.
+                    </figcaption>
+                </figure>
 
-                <h4>3. Learned Prompt Causal Intervention</h4> 
-                <p>In cases where the previous method 'fails', it does not necessarily mean that the 
-                    hidden state does not encode similar information; it may just be less prominent. 
-                    To evaluate the degree to which such signal is present in these cases, we explore an approach 
-                    in which we <i>learn</i> to surface information about subsequent tokens from individual contextual token embeddings.
-                <br>
-                <p class="text-center">
-                    <img id="linear" src="images/Paper/soft_prompt.png" class="medfig">
+                <p>The figure above shows average pairwise consistency across different CoT methods. Transfer and ensemble approaches substantially increase consistency compared to default or empty baselines.</p>
+
+                <p><strong>Key findings:</strong></p>
+                <ul style="margin-left: 1.5em;">
+                    <li><strong>Ensemble methods boost consistency:</strong> Using multiple models to generate and evaluate candidates achieves higher consistency than single-model approaches</li>
+                    <li><strong>Model choice matters:</strong> The effectiveness of transfer and ensemble methods varies significantly depending on which models serve as generators versus evaluators</li>
+                    <li><strong>Pattern holds across benchmarks:</strong> Both MedCalc-Bench and Instruction Induction show similar trends, with ensemble and transfer methods outperforming baselines</li>
+                </ul>
+
+                <p>These results suggest that <strong>models whose explanations transfer well to others also tend to be effective generators in ensemble settings.</strong></p>
+
+                <h3 style="margin-top: 3em;">Impact on Accuracy</h3>
+
+                <figure class="text-center">
+                    <img src="images/Paper/transfer_effect.png" alt="CoT transfer effect analysis" class="bigfig">
                     <figcaption>
-                        Learned context prompt Causal Intervention Overview. The left and right sides represent two different
-                        transformer model runs. The general setup is the same as the Fixed Prompt Causal Intervention. The difference lies in the context provided in the
-                    transformer run on the right hand side. Instead of manually thinking of a context, we provide a learned context to
-                    increase the tendency of decoding the subsequent tokens predicted by <i>h<sup>l</sup><sub style='position: relative; left: -.5em; top: +.5em'>T</sub></i>. 
-                    We do so by training the context, <i>c</i>, with
-                    <i>L<sub>KL</sub></i> criterion and the objective to match the subsequent token prediction, such as 'York' in this instance.
+                        <strong>CoT Transfer Effect Analysis (MedCalc-Bench).</strong> Distribution of outcomes when CoT reasoning is transferred across models, comparing predictions with CoT (answers removed) versus without CoT (empty baseline). Each CoT setting shows five outcomes: <span style="color: green;">Wrong→Correct</span> (CoT successfully corrects errors), <span style="color: red;">Correct→Wrong</span> (CoT misleads from correct to incorrect), <span style="color: blue;">Correct→Correct</span> (CoT maintains correct predictions), Wrong→Wrong(Match) (both incorrect with same answer), and Wrong→Wrong(Diff) (both incorrect with different answers). Settings are sorted by Wrong→Correct rate (descending).
+                    </figcaption>
+                </figure>
 
-                </figcaption>
-                </p>
+                <p>While CoT increases consistency, its effect on accuracy varies. Some CoT methods successfully correct errors (Wrong→Correct), while others can mislead models from correct to incorrect predictions (Correct→Wrong). The balance between these outcomes depends on both the CoT method and the models involved.</p>
 
+                <p><strong>Notable patterns:</strong> Ensemble and certain transfer methods show higher rates of error correction, though no method universally improves accuracy across all model pairs. This highlights the importance of considering both consistency and accuracy when evaluating CoT generalization.</p>
+       
+                <h3 style="margin-top: 3em;">Human Preference Study</h3>
 
+                <figure class="text-center">
+                    <img src="images/Paper/user_study.png" alt="Human preference correlation analysis" class="bigfig">
+                    <figcaption>
+                        <strong>Consistency correlates more strongly with human preference than accuracy.</strong> Scatter plots show relationships between model consistency (left) and accuracy (right) with human ratings across four dimensions: Clarity of Steps, Ease of Following, Confidence, and Best Overall. Linear regression lines reveal that consistency has stronger and more separable correlations with user preferences.
+                    </figcaption>
+                </figure>
+
+                <p>We conducted a user study with 15 participants (computer science and healthcare researchers) who rated CoT explanations on clarity, ease of following, and confidence. The results reveal a key finding: <strong>consistency between models is a better predictor of human preference than accuracy.</strong></p>
+
+                <p>This suggests that explanations which generalize well across models—leading different systems to the same conclusion—are also more convincing and understandable to human users. Ensemble methods, which achieved the highest consistency, also received the best ratings across all evaluation criteria.</p>
+            </div>
+        </div>
                     
+        <!-- <div class="row">
+            <div class="col">
                 <h2>Related Work</h2>
                 
                 <p>Our work builds upon insights in other work that has examined ways to predict the next token from intermediate layers:</p>
+                
+                <div class="citation">
+                    <a href="https://arxiv.org/pdf/2303.08112.pdf">
+                        <img src="images/belrose-2023.png" alt="Belrose et al. 2023">
+                        Nora Belrose, Zach Furman, Logan Smith, Danny Halawi, Igor Ostrovsky, Lev McKinney, Stella Biderman, Jacob Steinhardt. <em>Eliciting Latent Predictions from Transformers with the Tuned Lens.</em> 2023.
+                    </a>
+                    <p><strong>Notes:</strong> Analyzes transformers from the perspective of iterative inference, seeking to understand how model predictions are refined layer by layer.</p>
+                </div>
+                
+                <div class="citation">
+                    <a href="https://arxiv.org/pdf/2303.09435.pdf">
+                        <img src="images/din-2023.png" alt="Din et al. 2023">
+                        Alexander Yom Din, Taelin Karidi, Leshem Choshen, Mor Geva. <em>Jump to Conclusions: Short-Cutting Transformers With Linear Transformations.</em> 2023.
+                    </a>
+                    <p><strong>Notes:</strong> Proposes a method for casting hidden representations across transformer layers by using linear transformations. It allows 'peeking' into early layer representations of GPT-2 and BERT, showing that often LMs already predict the final output in early layers.</p>
+                </div>
+                
+                <div class="citation">
+                    <a href="https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens">
+                        <img src="images/logit-lens.png" alt="nostalgebraist 2020">
+                        nostalgebraist. <em>interpreting GPT: the logit lens.</em> 2020.
+                    </a>
+                    <p><strong>Notes:</strong> An early technique to view GPT's internals by directly decoding hidden states into vocabulary space using the model's pretrained unembedding matrix.</p>
+                </div>
+            </div>
+        </div> -->
 
-                
-                
-                
-                <!-- <h3>Transformer Mechanisms</h3> -->
-                <p class="citation"><a href="https://arxiv.org/pdf/2303.08112.pdf"><img src="images/belrose-2023.png" alt="belrose-2023">Nora Belrose, Zach Furman, Logan Smith, Danny Halawi, Igor Ostrovsky, Lev McKinney, Stella Biderman, Jacob Steinhardt. Eliciting Latent Predictions from Transformers with the Tuned Lens. 2023.</a><br>
-                <b>Notes:</b> Analyzes transformers from the perspective of iterative inference, seeking to understand how model predictions are refined layer by layer.
-                </p>                
-                
-                <p class="citation"><a href="https://arxiv.org/pdf/2303.09435.pdf"><img src="images/din-2023.png" alt="din-2023" style="max-height: 200px">Alexander Yom Din, Taelin Karidi, Leshem Choshen, Mor Geva. Jump to Conclusions: Short-Cutting Transformers With Linear Transformations. 2023.</a><br>
-                <b>Notes:</b> Proposes a method for casting hidden representations across transformer layers by using linear transformations. It allows 'peeking' into early layer representations of GPT-2 and BERT, showing
-                that often LMs already predict the final output in early layers.
-                </p>      
-                <p class="citation"><a href="https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens"><img src="images/logit-lens.png" alt="nostalgebraist-2020" style="max-height: 200px"> nostalgebraist. interpreting GPT: the logit lens. 2020.</a><br>
-                <b>Notes:</b> An early technique to view GPT's internals by directly decoding hidden states into vocabulary space using the model's pretrained unembedding matrix.
-                </p>
-                <!-- <h3>Task Representations</h3> -->
-                <!-- <p class="citation"><a href=""><img src="" alt=""> </a><br>
-                <b>Notes:</b> 
-                </p>  -->
+        <div class="row">
+            <div class="col">
+                <h2>How to Cite</h2>
 
-	
-                <h2>How to cite</h2>
-
-                <p>This work appeared at CoNLL 2023. It can be cited as follows:
-                </p>
+                <p>This work is going to be available on arXiv and can be cited as follows:</p>
 
                 <div class="card">
-                    <h3 class="card-header">bibliography</h3>
+                    <h3 class="card-header">Bibliography</h3>
                     <div class="card-block">
                         <p style="text-indent: -3em; margin-left: 3em;" class="card-text clickselect">
-                            Koyena Pal, Jiuding Sun, Andrew Yuan, Byron C. Wallace, and David Bau. "<em>Future Lens: Anticipating Subsequent Tokens from a Single Hidden State</em>." SIGNLL 
-                            Conference on Computational Natural Language Learning (CoNLL)<nobr><a
-                                    href=""></a> (2023).</nobr>
+                            Koyena Pal, David Bau, and Chandan Singh. "<em>Do Explanations Generalize across Large Reasoning Models?</em>" arXiv preprint (2026).
                         </p>
                     </div>
-                    <h3 class="card-header">bibtex</h3>
+                    <h3 class="card-header">BibTeX</h3>
                     <div class="card-block">
-                        <pre class="card-text clickselect"
->@inproceedings{pal2023future,
-    title={Future Lens: Anticipating Subsequent Tokens from a Single Hidden State},
-    author={Pal, Koyena and Sun, Jiuding and Yuan, Andrew and Wallace, Byron C and Bau, David},
-    booktitle={Proceedings of the 27th Conference on Computational Natural Language Learning (CoNLL)},
-    pages={548--560},
-    year={2023}
+                        <pre class="card-text clickselect">@article{pal2026genex,
+    title={Do Explanations Generalize across Large Reasoning Models?},
+    author={Pal, Koyena and Bau, David and Singh, Chandan},
+    journal={arXiv preprint},
+    year={2026}
 }</pre>
                     </div>
                 </div>
-                <!-- </p> -->
-
-            <!-- </div> -->
-            </div> <!--col -->    
-        </div> <!--row -->
-    </div> <!-- container -->
-
-    
+            </div>
+        </div>
+    </div>
 
     <footer class="nd-pagefooter">
         <div class="row">
@@ -305,15 +314,15 @@
         </div>
     </footer>
 
+    <script>
+        $(document).on('click', '.clickselect', function (ev) {
+            var range = document.createRange();
+            range.selectNodeContents(this);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
+    </script>
 </body>
-<script>
-    $(document).on('click', '.clickselect', function (ev) {
-        var range = document.createRange();
-        range.selectNodeContents(this);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-    });
-</script>
 
 </html>
