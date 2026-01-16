@@ -247,37 +247,37 @@
             </div>
         </div>
                     
-        <!-- <div class="row">
+        <div class="row">
             <div class="col">
                 <h2>Related Work</h2>
                 
-                <p>Our work builds upon insights in other work that has examined ways to predict the next token from intermediate layers:</p>
+                <p>Our work builds upon insights in other work that has examined ways to generate, improve, assess and evaluate explanations:</p>
                 
                 <div class="citation">
-                    <a href="https://arxiv.org/pdf/2303.08112.pdf">
-                        <img src="images/belrose-2023.png" alt="Belrose et al. 2023">
-                        Nora Belrose, Zach Furman, Logan Smith, Danny Halawi, Igor Ostrovsky, Lev McKinney, Stella Biderman, Jacob Steinhardt. <em>Eliciting Latent Predictions from Transformers with the Tuned Lens.</em> 2023.
+                    <a href="https://dl.acm.org/doi/10.5555/3600270.3602070">
+                        <img src="images/wei-2022.png" alt="Wei et al. 2022">
+                        Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia, Ed Chi, Quoc Le, Denny Zhou. <em>Chain-of-thought prompting elicits reasoning in large language models.</em> 2022.
                     </a>
-                    <p><strong>Notes:</strong> Analyzes transformers from the perspective of iterative inference, seeking to understand how model predictions are refined layer by layer.</p>
+                    <p><strong>Notes:</strong> Introduces chain-of-thought prompting and shows that generating intermediate reasoning steps dramatically improves language model performance on complex reasoning tasks.</p>
                 </div>
                 
                 <div class="citation">
-                    <a href="https://arxiv.org/pdf/2303.09435.pdf">
-                        <img src="images/din-2023.png" alt="Din et al. 2023">
-                        Alexander Yom Din, Taelin Karidi, Leshem Choshen, Mor Geva. <em>Jump to Conclusions: Short-Cutting Transformers With Linear Transformations.</em> 2023.
+                    <a href="https://arxiv.org/abs/2505.05410">
+                        <img src="images/chen-2025.png" alt="Chen et al. 2025">
+                        Yanda Chen, Joe Benton, Ansh Radhakrishnan, Jonathan Uesato, Carson Denison, John Schulman, Arushi Somani, Peter Hase, Misha Wagner, Fabien Roger, Vlad Mikulik, Samuel R. Bowman, Jan Leike, Jared Kaplan, Ethan Perez. <em>Reasoning Models Don't Always Say What They Think</em> 2025.
                     </a>
-                    <p><strong>Notes:</strong> Proposes a method for casting hidden representations across transformer layers by using linear transformations. It allows 'peeking' into early layer representations of GPT-2 and BERT, showing that often LMs already predict the final output in early layers.</p>
+                    <p><strong>Notes:</strong> Demonstrates that reasoning models often fail to verbalize their actual reasoning processes in CoTs, with reveal rates frequently below 20%, highlighting fundamental challenges in using CoT monitoring for AI safety.</p>
                 </div>
                 
                 <div class="citation">
-                    <a href="https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens">
-                        <img src="images/logit-lens.png" alt="nostalgebraist 2020">
-                        nostalgebraist. <em>interpreting GPT: the logit lens.</em> 2020.
+                    <a href="https://aclanthology.org/2020.acl-main.386/">
+                        <img src="images/jacovi-2020.png" alt="Jacovi & Goldberg 2020">
+                        Alon Jacovi, Yoav Goldberg. <em>Towards Faithfully Interpretable NLP Systems: How Should We Define and Evaluate Faithfulness?</em> 2020.
                     </a>
-                    <p><strong>Notes:</strong> An early technique to view GPT's internals by directly decoding hidden states into vocabulary space using the model's pretrained unembedding matrix.</p>
+                    <p><strong>Notes:</strong> Distinguishes faithfulness from plausibility and argues for graded rather than binary faithfulness metrics.</p>
                 </div>
             </div>
-        </div> -->
+        </div>
 
         <div class="row">
             <div class="col">
